@@ -44,6 +44,7 @@ the solution to compare.
 |---|---|
 | Setup | [config.py](config.py) · [check_setup.py](check_setup.py) |
 | 1 | [system_prompt_template.md](system_prompt_template.md) · [system_prompt.md](system_prompt.md) (a possible result) · [knowledge/](knowledge/) · [kurbelwerk-assistant/SKILL.md](kurbelwerk-assistant/SKILL.md) |
+| 2 | [playground.py](playground.py) |
 | 3 | [hello_api.py](hello_api.py) · [chat.py](chat.py) |
 | 5 | [kb.py](kb.py) · [ask.py](ask.py) |
 | 6 | [golden_retrieval.json](golden_retrieval.json) · [retrieval_check.py](retrieval_check.py) · [extra/old_price_list.md](extra/old_price_list.md) |
@@ -57,7 +58,7 @@ the solution to compare.
 |---|---|
 | 0:00 – 0:15 | What an AI assistant is, how an LLM produces text, tokens, context window, system prompt, temperature |
 | 0:15 – 0:30 | A first assistant without code: system prompt template and knowledge files |
-| 0:30 – 0:40 | Tokens, context window and temperature in the AI Studio playground |
+| 0:30 – 0:40 | Tokens, context window and temperature, tried with a small script |
 | 0:40 – 1:00 | From the chat window to the API: requests, keys, chat history, streaming |
 | 1:00 – 1:10 | Three providers, one assistant: comparing APIs and choosing a provider |
 | 1:10 – 1:35 | A knowledge base with RAG: chunks, embeddings, search, citations |

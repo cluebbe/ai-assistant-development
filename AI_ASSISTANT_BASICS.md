@@ -39,7 +39,7 @@ Four words you will need all day:
 | **Token** | The unit an LLM reads and writes: a word, part of a word or a sign. In English, 100 tokens are roughly 75 words | Prices and limits are counted in tokens |
 | **Context window** | The maximum number of tokens the model can look at in one request: instructions, chat so far, documents and answer together | Everything the model should know must fit in here |
 | **System prompt** | Instructions that come before the conversation and apply to all of it | This is where the assistant gets its job |
-| **Temperature** | How much randomness goes into choosing the next token. Low: predictable. High: varied | Customer service wants low, brainstorming wants higher |
+| **Temperature** | How much randomness goes into choosing the next token. Low: predictable. High: varied | Customer service wants low, brainstorming wants higher. Newer models react much less to it (Task 2) |
 
 **Chatbot, copilot, agent.** These words are used loosely. A useful way to
 tell them apart:
@@ -65,8 +65,8 @@ on her website, around the clock, without making anything up.
 Please do these steps **at home, before the workshop**. Everything is free
 and needs no credit card.
 
-**1. A Google account**, for Gemini (Task 1) and Google AI Studio (Tasks 2
-and 3). If you already use Gmail, you have one. For Task 1 it must be a
+**1. A Google account**, for Gemini (Task 1) and Google AI Studio (for the
+API key). If you already use Gmail, you have one. For Task 1 it must be a
 personal account of someone aged 18 or over (work and school accounts get
 the feature later), with *Keep activity* switched on in the Gemini app.
 
@@ -621,53 +621,139 @@ PayPal. The other three show where the limits are:
 
 ## Task 2 — Tokens, Context Window and Temperature
 
-[Google AI Studio](https://aistudio.google.com) is a playground for the
-same models you will use from Python. It shows settings that chat apps hide.
+Chat apps hide the settings that decide cost and behaviour. A small script
+shows them for the same model you will use from Python. The setup from
+*Before the Workshop* is all it needs; you do not have to understand the
+code yet. Create `playground.py`:
 
-**1. Tokens.** Open a new chat prompt in AI Studio. Type, without sending,
-*bike repair workshop*, and look at the token count (shown near the input box
-or in the settings panel). Then replace it with
-*Fahrradreparaturwerkstatt*. Which one needs more tokens? Paste the whole
-`knowledge/faq.md` and look again.
+<details>
+<summary>playground.py: content to copy</summary>
 
-**2. Context window.** In the model selection, look at the model's
-**context window** or *input token limit*. How many copies of `faq.md`
-would fit?
+```python
+"""Task 2: tokens, context window and temperature.
 
-**3. Temperature.** In the settings panel, set **Temperature** to `0` and
-send three times, each time in a new chat:
+    python playground.py tokens "some text"   # Count the tokens of a text
+    python playground.py tokens --file knowledge/faq.md
+    python playground.py window               # Show the model's limits
+    python playground.py temperature 0        # Three answers at temperature 0
+    python playground.py system "question"    # Ask with system_prompt.md only
+"""
+
+import sys
+from pathlib import Path
+
+from google.genai import types
+
+from config import CHAT_MODEL, get_client, load_system_prompt
+
+client = get_client()
+command = sys.argv[1] if len(sys.argv) > 1 else ""
+
+if command == "tokens" and len(sys.argv) > 2:
+    if sys.argv[2] == "--file":
+        text = Path(sys.argv[3]).read_text(encoding="utf-8")
+    else:
+        text = " ".join(sys.argv[2:])
+    # Counting tokens is free and does not use the model
+    result = client.models.count_tokens(model=CHAT_MODEL, contents=text)
+    print(f"{len(text)} characters = {result.total_tokens} tokens")
+
+elif command == "window":
+    model = client.models.get(model=CHAT_MODEL)
+    print(f"Model:               {model.name.removeprefix('models/')}")
+    print(f"Context window:      {model.input_token_limit} tokens (input)")
+    print(f"Longest answer:      {model.output_token_limit} tokens (output)")
+    print(f"Highest temperature: {model.max_temperature}")
+
+elif command == "temperature" and len(sys.argv) > 2:
+    temperature = float(sys.argv[2])
+    for attempt in range(1, 4):
+        response = client.models.generate_content(
+            model=CHAT_MODEL,
+            contents="Invent a name for a bicycle repair workshop. Reply with the name only.",
+            config=types.GenerateContentConfig(temperature=temperature),
+        )
+        print(f"{attempt}. {response.text.strip()}")
+
+elif command == "system" and len(sys.argv) > 2:
+    # The rules from your system prompt, but no knowledge files
+    response = client.models.generate_content(
+        model=CHAT_MODEL,
+        contents=" ".join(sys.argv[2:]),
+        config=types.GenerateContentConfig(system_instruction=load_system_prompt()),
+    )
+    print(response.text)
+
+else:
+    print(__doc__)
+```
+
+</details>
+
+**1. Tokens.** Count the tokens of two texts with the same meaning, and of
+the whole FAQ:
+
+```bash
+python playground.py tokens "bike repair workshop"
+python playground.py tokens "Fahrradreparaturwerkstatt"
+python playground.py tokens --file knowledge/faq.md
+```
+
+Which one needs more tokens per character?
+
+**2. Context window.** Run `python playground.py window`. How many copies
+of `faq.md` would fit into one request?
+
+**3. Temperature.** Run `python playground.py temperature 0`, then
+`python playground.py temperature 2`. Each sends three times:
 
 > *Invent a name for a bicycle repair workshop. Reply with the name only.*
 
-Then set the temperature to the maximum and do the same.
+Do the answers at `0` stay the same, and do the answers at `2` vary more?
 
-**4. System instructions.** Open *System instructions*, paste your
-`system_prompt.md` and ask *What does a full service cost?*. What happens,
-and why is this different from the skill in Task 1?
+**4. System instructions.** Ask with your `system_prompt.md`, but without
+the knowledge files. Run it two or three times:
+
+```bash
+python playground.py system "What does a full service cost?"
+```
+
+What happens, and why is this different from the skill in Task 1?
 
 <details>
 <summary>Solution</summary>
 
-**1.** The German word is one word but several tokens: rare and long words
+**1.** In our test, *bike repair workshop* was 4 tokens for 20 characters,
+*Fahrradreparaturwerkstatt* 9 tokens for 25 characters. Rare and long words
 are split into pieces the model knows. Languages other than English often
 need more tokens for the same content, so they cost a bit more and fill the
-context window faster. The FAQ file is roughly a thousand tokens.
+context window faster. The FAQ file was about 700 tokens.
 
-**2.** Current models accept hundreds of thousands to over a million input
-tokens, so the FAQ would fit hundreds of times. A big window does not mean
-"put everything in": every token costs money and time on every request, and
-models are less reliable at using details buried in the middle of a very long
-input. Task 5 shows how to send only the relevant parts.
+**2.** The model accepts about a million input tokens (1,048,576), so the
+FAQ would fit well over a thousand times. A big window does not mean "put
+everything in": every token costs money and time on every request, and
+models are less reliable at using details buried in the middle of a very
+long input. Task 5 shows how to send only the relevant parts. The answer
+has its own, much smaller limit.
 
-**3.** At temperature `0`, the three answers are identical or nearly so.
-At the maximum, they vary and become more unusual. For a customer service
-assistant you want reliable, repeatable answers, so use a low value. For
-brainstorming, a higher one.
+**3.** The result surprises most people. In our test, temperature `0` gave
+three slightly different names (*Spoke & Spanner*, *Spoke & Spirit*,
+*Spoke & Splice*), and temperature `2` gave *Spoke & Spanner* three times.
+Newer models change their answers much less with the temperature than
+older ones, and Google recommends leaving it at the default for them. Two
+lessons follow: **temperature `0` does not guarantee identical answers**,
+and reliability comes from clear instructions, good sources and tests, not
+from one setting. With older or open models, low values still make answers
+more predictable, and high values more varied.
 
-**4.** With the system prompt but **without the knowledge files**, the model
-should say it does not know the price and give the phone number, if your
-rules are good. The skill had the files; here they are missing. The model
-knows nothing about Kurbelwerk except what you send in this request.
+**4.** The system prompt says *"Never invent prices"*, and yet in our test
+Ritzel answered *€ 80*, then *€ 89*, then *€ 79*, each time sounding sure.
+The real price is € 89, so one answer was right by luck. The model knows
+nothing about Kurbelwerk except what you send in this request, and here
+the price list is missing. A helpful model fills the gap with a plausible
+number, and a rule against it is not enough. The skill had the files; here
+they are missing. Tasks 5 and 9 show how to give the model the right facts
+and how to test that it uses them.
 
 **Key points:**
 - You pay per token, for the input and for the output. Instructions and
@@ -675,8 +761,11 @@ knows nothing about Kurbelwerk except what you send in this request.
 - Newer models can **think** before answering: they write hidden
   intermediate text first. These thinking tokens make difficult answers
   better and are billed like output. Task 3 shows how many there were.
-- Some newer models no longer let you change the temperature, and steer
-  variety by instructions instead. The idea behind it stays useful.
+- Rules in the system prompt shape behaviour, but they do not replace
+  knowledge. Without facts, even a well-instructed model invents them.
+- [Google AI Studio](https://aistudio.google.com) offers the same models
+  in the browser. Its layout changes often, so this workshop uses the
+  script instead.
 
 </details>
 
