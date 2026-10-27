@@ -8,10 +8,18 @@ import time
 from datetime import datetime
 from pathlib import Path
 
+from google.genai import types
+from pydantic import BaseModel
+
 from assistant import answer
-from config import PAUSE_SECONDS
+from config import CHAT_MODEL, PAUSE_SECONDS, get_client
 
 RUNS_DIR = Path("eval_runs")
+
+
+class Verdict(BaseModel):
+    passed: bool
+    reason: str
 
 
 def check(case, text):
@@ -22,14 +30,38 @@ def check(case, text):
     return has_required and not has_forbidden
 
 
+def judge(case, text):
+    """Ask a second model whether the answer meets the case's "judge" criterion."""
+    response = get_client().models.generate_content(
+        model=CHAT_MODEL,
+        contents=(f"Customer question: {case['question']}\n\n<answer>\n{text}\n</answer>\n\n"
+                  f"Criterion: {case['judge']}"),
+        config=types.GenerateContentConfig(
+            system_instruction="You check answers of a customer service assistant strictly. "
+                               "Decide whether the answer meets the criterion.",
+            response_mime_type="application/json",
+            response_schema=Verdict,
+            temperature=0,
+        ),
+    )
+    return response.parsed
+
+
 cases = json.loads(Path("golden_set.json").read_text(encoding="utf-8"))
 results = {}
 for case in cases:
     text = answer(case["question"])["text"]
     passed = check(case, text)
-    results[case["id"]] = {"passed": passed, "question": case["question"], "answer": text}
+    reason = "" if passed else "word check failed"
+    if passed and "judge" in case:  # Words are fine; now let a model judge the meaning
+        time.sleep(PAUSE_SECONDS)
+        verdict = judge(case, text)
+        passed, reason = verdict.passed, f"judge: {verdict.reason}"
+    results[case["id"]] = {"passed": passed, "question": case["question"], "answer": text,
+                           "reason": reason}
     print(f"{'PASS' if passed else 'FAIL'}  {case['id']:10} {case['question']}")
     if not passed:
+        print(f"      {reason}")
         print("      " + text.replace("\n", " ")[:300])
     time.sleep(PAUSE_SECONDS)
 

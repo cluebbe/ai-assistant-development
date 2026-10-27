@@ -13,9 +13,14 @@ load_dotenv()  # Reads GEMINI_API_KEY from the file .env, if there is one
 # The SDK prints a hint about tool calls that is not relevant for this workshop
 logging.getLogger("google_genai.models").setLevel(logging.ERROR)
 
-# Model names change over time. If a script says a model is not found,
-# run check_setup.py and pick a current one from the list.
-CHAT_MODEL = "gemini-2.5-flash"
+# Model names change over time. If a script says a model is not found or
+# "high demand", run check_setup.py and pick another one from the list
+# (a "flash" model for chat, an "embedding" model for embeddings).
+# Free plans have a daily request limit per model. Flash-Lite models have a
+# much higher one than the bigger Flash models, which is why we use one here.
+# "-latest" always points to Google's newest version. For a real product, use
+# a fixed name, so the behaviour does not change without you noticing.
+CHAT_MODEL = "gemini-flash-lite-latest"
 EMBED_MODEL = "gemini-embedding-001"
 
 # Free plans allow only a few requests per minute. Scripts that send many
