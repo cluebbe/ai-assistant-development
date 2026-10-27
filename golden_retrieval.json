@@ -1,0 +1,12 @@
+[
+  {"question": "Do I have to make an appointment for a puncture?", "expected": "Can you fix a flat tyre on the same day?"},
+  {"question": "Is there a replacement bike while you work on mine?", "expected": "Can I borrow a bike while mine is being repaired?"},
+  {"question": "How much is a full service?", "expected": "Prices (including VAT)"},
+  {"question": "Are you open on Mondays?", "expected": "Opening hours"},
+  {"question": "Can I pay with PayPal?", "expected": "How can I pay?"},
+  {"question": "My e-bike battery is broken, can you fix it?", "expected": "Do you repair e-bikes?"},
+  {"question": "What happens if the repair gets more expensive?", "expected": "Will I know the price before you start?"},
+  {"question": "I forgot to collect my bike for a month. Does that cost extra?", "expected": "How long can I leave my bike after the repair?"},
+  {"question": "Do you have second-hand bikes for sale?", "expected": "Do you sell bikes?"},
+  {"question": "How long is the guarantee on a repair?", "expected": "Warranty"}
+]

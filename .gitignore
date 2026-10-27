@@ -1,0 +1,22 @@
+# Private reference material — not part of this repository
+*.pdf
+velpTEC_K4.0103_AI-Assistant Development_Theorieskript.pdf
+
+# Secrets: never commit your API key
+.env
+
+venv/
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Generated while working through the tasks
+index.json
+eval_runs/
+logs/
+triage_result.json
+.gradio/
+
+# Local test runs
+test/
