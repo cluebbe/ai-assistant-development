@@ -39,7 +39,7 @@ Four words you will need all day:
 | **Token** | The unit an LLM reads and writes: a word, part of a word or a sign. In English, 100 tokens are roughly 75 words | Prices and limits are counted in tokens |
 | **Context window** | The maximum number of tokens the model can look at in one request: instructions, chat so far, documents and answer together | Everything the model should know must fit in here |
 | **System prompt** | Instructions that come before the conversation and apply to all of it | This is where the assistant gets its job |
-| **Temperature** | How much randomness goes into choosing the next token. Low: predictable. High: varied | Customer service wants low, brainstorming wants higher. Newer models react much less to it (Task 2) |
+| **Temperature** | How much randomness goes into choosing the next token. Low: predictable. High: varied | Customer service wants low, brainstorming wants higher. Newer models react much less to it |
 
 **Chatbot, copilot, agent.** These words are used loosely. A useful way to
 tell them apart:
@@ -619,7 +619,7 @@ PayPal. The other three show where the limits are:
 
 ---
 
-## Task 2 — Tokens, Context Window and Temperature
+## Task 2 — Tokens and Context Window
 
 Chat apps hide the settings that decide cost and behaviour. A small script
 shows them for the same model you will use from Python. The setup from
@@ -630,12 +630,11 @@ code yet. Create `playground.py`:
 <summary>playground.py: content to copy</summary>
 
 ```python
-"""Task 2: tokens, context window and temperature.
+"""Task 2: tokens, context window and system instructions.
 
     python playground.py tokens "some text"   # Count the tokens of a text
     python playground.py tokens --file knowledge/faq.md
     python playground.py window               # Show the model's limits
-    python playground.py temperature 0        # Three answers at temperature 0
     python playground.py system "question"    # Ask with system_prompt.md only
 """
 
@@ -663,17 +662,6 @@ elif command == "window":
     print(f"Model:               {model.name.removeprefix('models/')}")
     print(f"Context window:      {model.input_token_limit} tokens (input)")
     print(f"Longest answer:      {model.output_token_limit} tokens (output)")
-    print(f"Highest temperature: {model.max_temperature}")
-
-elif command == "temperature" and len(sys.argv) > 2:
-    temperature = float(sys.argv[2])
-    for attempt in range(1, 4):
-        response = client.models.generate_content(
-            model=CHAT_MODEL,
-            contents="Invent a name for a bicycle repair workshop. Reply with the name only.",
-            config=types.GenerateContentConfig(temperature=temperature),
-        )
-        print(f"{attempt}. {response.text.strip()}")
 
 elif command == "system" and len(sys.argv) > 2:
     # The rules from your system prompt, but no knowledge files
@@ -704,14 +692,7 @@ Which one needs more tokens per character?
 **2. Context window.** Run `python playground.py window`. How many copies
 of `faq.md` would fit into one request?
 
-**3. Temperature.** Run `python playground.py temperature 0`, then
-`python playground.py temperature 2`. Each sends three times:
-
-> *Invent a name for a bicycle repair workshop. Reply with the name only.*
-
-Do the answers at `0` stay the same, and do the answers at `2` vary more?
-
-**4. System instructions.** Ask with your `system_prompt.md`, but without
+**3. System instructions.** Ask with your `system_prompt.md`, but without
 the knowledge files. Run it two or three times:
 
 ```bash
@@ -736,17 +717,7 @@ models are less reliable at using details buried in the middle of a very
 long input. Task 5 shows how to send only the relevant parts. The answer
 has its own, much smaller limit.
 
-**3.** The result surprises most people. In our test, temperature `0` gave
-three slightly different names (*Spoke & Spanner*, *Spoke & Spirit*,
-*Spoke & Splice*), and temperature `2` gave *Spoke & Spanner* three times.
-Newer models change their answers much less with the temperature than
-older ones, and Google recommends leaving it at the default for them. Two
-lessons follow: **temperature `0` does not guarantee identical answers**,
-and reliability comes from clear instructions, good sources and tests, not
-from one setting. With older or open models, low values still make answers
-more predictable, and high values more varied.
-
-**4.** The system prompt says *"Never invent prices"*, and yet in our test
+**3.** The system prompt says *"Never invent prices"*, and yet in our test
 Ritzel answered *€ 80*, then *€ 89*, then *€ 79*, each time sounding sure.
 The real price is € 89, so one answer was right by luck. The model knows
 nothing about Kurbelwerk except what you send in this request, and here

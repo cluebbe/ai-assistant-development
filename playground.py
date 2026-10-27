@@ -1,9 +1,8 @@
-"""Task 2: tokens, context window and temperature.
+"""Task 2: tokens, context window and system instructions.
 
     python playground.py tokens "some text"   # Count the tokens of a text
     python playground.py tokens --file knowledge/faq.md
     python playground.py window               # Show the model's limits
-    python playground.py temperature 0        # Three answers at temperature 0
     python playground.py system "question"    # Ask with system_prompt.md only
 """
 
@@ -31,17 +30,6 @@ elif command == "window":
     print(f"Model:               {model.name.removeprefix('models/')}")
     print(f"Context window:      {model.input_token_limit} tokens (input)")
     print(f"Longest answer:      {model.output_token_limit} tokens (output)")
-    print(f"Highest temperature: {model.max_temperature}")
-
-elif command == "temperature" and len(sys.argv) > 2:
-    temperature = float(sys.argv[2])
-    for attempt in range(1, 4):
-        response = client.models.generate_content(
-            model=CHAT_MODEL,
-            contents="Invent a name for a bicycle repair workshop. Reply with the name only.",
-            config=types.GenerateContentConfig(temperature=temperature),
-        )
-        print(f"{attempt}. {response.text.strip()}")
 
 elif command == "system" and len(sys.argv) > 2:
     # The rules from your system prompt, but no knowledge files

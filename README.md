@@ -2,7 +2,7 @@
 
 A hands-on, three-hour beginner workshop on building an AI assistant step by
 step. Participants start with a no-code assistant and a good system prompt,
-learn how tokens, context windows and temperature affect it, then move to the
+learn how tokens and context windows affect it, then move to the
 API in Python. They add a knowledge base with retrieval-augmented generation
 (RAG), check and clean it, give the assistant tools, build an email triage
 workflow with a human in the loop, test everything with a golden set, and
@@ -58,7 +58,7 @@ the solution to compare.
 |---|---|
 | 0:00 – 0:15 | What an AI assistant is, how an LLM produces text, tokens, context window, system prompt, temperature |
 | 0:15 – 0:30 | A first assistant without code: system prompt template and knowledge files |
-| 0:30 – 0:40 | Tokens, context window and temperature, tried with a small script |
+| 0:30 – 0:40 | Tokens, context window and system instructions, tried with a small script |
 | 0:40 – 1:00 | From the chat window to the API: requests, keys, chat history, streaming |
 | 1:00 – 1:10 | Three providers, one assistant: comparing APIs and choosing a provider |
 | 1:10 – 1:35 | A knowledge base with RAG: chunks, embeddings, search, citations |
