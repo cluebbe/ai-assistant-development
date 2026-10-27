@@ -43,7 +43,7 @@ the solution to compare.
 | Task | Files |
 |---|---|
 | Setup | [config.py](config.py) · [check_setup.py](check_setup.py) |
-| 1 | [system_prompt_template.md](system_prompt_template.md) · [system_prompt.md](system_prompt.md) (a possible result) · [knowledge/](knowledge/) |
+| 1 | [system_prompt_template.md](system_prompt_template.md) · [system_prompt.md](system_prompt.md) (a possible result) · [knowledge/](knowledge/) · [kurbelwerk-assistant/SKILL.md](kurbelwerk-assistant/SKILL.md) |
 | 3 | [hello_api.py](hello_api.py) · [chat.py](chat.py) |
 | 5 | [kb.py](kb.py) · [ask.py](ask.py) |
 | 6 | [golden_retrieval.json](golden_retrieval.json) · [retrieval_check.py](retrieval_check.py) · [extra/old_price_list.md](extra/old_price_list.md) |
