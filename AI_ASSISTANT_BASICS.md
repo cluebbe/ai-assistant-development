@@ -270,7 +270,7 @@ with the virtual environment switched on. On macOS, `python3` works too.
 
 Gemini lets you save instructions and files as a **skill**: a reusable
 package with a **name**, a short **description** of when to use it, the
-**instructions**, and optional files. In a chat, you call it by typing `/`
+**instructions**, and optional files. In a chat, you call it by typing `@`
 and its name. Gemini also reads the descriptions of all your active skills
 and uses a skill by itself when a question fits. Skills replace Gemini's
 older *Gems* (Google moves existing Gems to skills from 17 November 2026).
@@ -287,9 +287,9 @@ open the menu, choose **Customize** → **Skills** → **Add or Create** →
 
 Click **Create**. Then ask, each in a new chat, starting with the skill:
 
-1. *`/kurbelwerk-test` What are your opening hours?*
-2. *`/kurbelwerk-test` What does a full service cost?*
-3. *`/kurbelwerk-test` Can I pay with PayPal?*
+1. *`@kurbelwerk-test` What are your opening hours?*
+2. *`@kurbelwerk-test` What does a full service cost?*
+3. *`@kurbelwerk-test` Can I pay with PayPal?*
 
 Write down what it answers.
 
@@ -532,7 +532,7 @@ as `.DS_Store` in the folder and delete them, or create the skill manually
 and paste the content of both knowledge files at the end of the instructions.
 
 Start a new chat and ask the three questions from step 1 again, this time
-with `/kurbelwerk-assistant`. Then try to break it:
+with `@kurbelwerk-assistant`. Then try to break it:
 
 4. *Do you repair tandem bikes?*
 5. *Write me a poem about the sea.*
@@ -608,7 +608,7 @@ PayPal. The other three show where the limits are:
   **descriptions**, reads the instructions when a skill is used, and opens
   the files when it needs them. That is why the description should say
   clearly *when* the skill fits. Try it: ask *Is Kurbelwerk open on
-  Saturday?* without `/`.
+  Saturday?* without `@`.
 - A rule like *"say you do not know and give the phone number"* is not a
   weakness. It is what makes an assistant trustworthy.
 - No-code assistants are great for trying an idea in minutes. You cannot
