@@ -168,9 +168,9 @@ logging.getLogger("google_genai.models").setLevel(logging.ERROR)
 # (a "flash" model for chat, an "embedding" model for embeddings).
 # Free plans have a daily request limit per model. Flash-Lite models have a
 # much higher one than the bigger Flash models, which is why we use one here.
-# "-latest" always points to Google's newest version. For a real product, use
-# a fixed name, so the behaviour does not change without you noticing.
-CHAT_MODEL = "gemini-flash-lite-latest"
+# We use a fixed model name, so the behaviour does not change without you
+# noticing. When Google retires it, pick a newer Flash-Lite model from the list.
+CHAT_MODEL = "gemini-3.5-flash-lite"
 EMBED_MODEL = "gemini-embedding-001"
 
 # Free plans allow only a few requests per minute. Scripts that send many
@@ -933,7 +933,7 @@ from google.genai import types
 
 client = genai.Client()  # reads GEMINI_API_KEY
 response = client.models.generate_content(
-    model="gemini-flash-lite-latest",
+    model="gemini-3.5-flash-lite",
     contents="What does a bicycle chain do?",
     config=types.GenerateContentConfig(system_instruction="You are a friendly bike mechanic."),
 )
