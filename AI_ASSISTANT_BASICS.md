@@ -87,8 +87,15 @@ long string of letters and numbers. The free plan needs no billing account.
 > AI Studio. Today we only use an invented business. Never send customer
 > data, passwords or anything confidential through a free plan.
 
-**3. Python 3.10 or newer** from [python.org](https://www.python.org/downloads/).
+**3. Python 3.10 to 3.13** from [python.org](https://www.python.org/downloads/).
 On Windows, tick **Add python.exe to PATH** in the installer.
+
+> **Not the newest Python.** Brand-new Python versions (3.14 and later) may
+> not have ready-made packages for all libraries yet. pip then tries to build
+> them itself and fails with errors such as *"Microsoft Visual C++ 14.0 or
+> greater is required"*. Use **Python 3.13**. It can be installed next to a
+> newer version. Check which ones you have with `python3 --version`
+> (Windows: `py -0`).
 
 **4. Visual Studio Code** from [code.visualstudio.com](https://code.visualstudio.com),
 as your editor. Word processors break code files.
@@ -109,6 +116,12 @@ source .venv/bin/activate         # Switch it on (Windows: .venv\Scripts\activat
 pip install google-genai python-dotenv "gradio[mcp]" tzdata
 code .                            # Open the folder in VS Code
 ```
+
+If you have several Python versions, create the environment with 3.13
+explicitly: `python3.13 -m venv .venv` (Windows: `py -3.13 -m venv .venv`).
+After switching it on, `python --version` must show 3.13 (or 3.10 to 3.12).
+Keep the project folder on your own computer, not on a network drive or a
+synced cloud folder: virtual environments there often break.
 
 When the virtual environment is on, the terminal line starts with `(.venv)`.
 **Every time** you open a new terminal for this workshop, go into the folder

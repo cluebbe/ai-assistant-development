@@ -18,7 +18,7 @@ with real conversation logs and turns a tool into an MCP server.
 ## Getting Started
 
 **Requirements:** a Google account (for Gemini and a free API key from
-[Google AI Studio](https://aistudio.google.com)), Python 3.10+,
+[Google AI Studio](https://aistudio.google.com)), Python 3.10–3.13,
 [Visual Studio Code](https://code.visualstudio.com), and a free
 [Hugging Face](https://huggingface.co) account. GitHub Copilot in VS Code is
 only needed for optional Task 12.
